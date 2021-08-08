@@ -296,14 +296,14 @@ export abstract class EsRepository {
     return res.body;
   }
 
-  public async refresh(index: string | string[]): Promise<void> {
+  protected async refresh(index: string | string[]): Promise<void> {
     await this.client.indices.refresh({
       index,
       ignore_unavailable: true
     });
   }
 
-  public async disableRefresh(index: string | string[]): Promise<void> {
+  protected async disableRefresh(index: string | string[]): Promise<void> {
     await this.client.indices.putSettings({
       index,
       body: {
@@ -312,7 +312,7 @@ export abstract class EsRepository {
     });
   }
 
-  public async enableRefresh(index: string | string[], intervalSecond = 1): Promise<void> {
+  protected async enableRefresh(index: string | string[], intervalSecond = 1): Promise<void> {
     await this.client.indices.putSettings({
       index,
       body: {
@@ -321,7 +321,7 @@ export abstract class EsRepository {
     });
   }
 
-  public async forceMerge(index: string | string[], maxNumSegments = 5): Promise<void> {
+  protected async forceMerge(index: string | string[], maxNumSegments = 5): Promise<void> {
     await this.client.indices.forcemerge({
       index,
       ignore_unavailable: true,
@@ -357,7 +357,7 @@ export abstract class EsRepository {
     return JSON.parse(str);
   }
 
-  public async bulk(args: RequestParams.Bulk): Promise<BulkResult> {
+  protected async bulk(args: RequestParams.Bulk): Promise<BulkResult> {
     const res = await this.client.bulk(args);
     const items = res.body.items as { index: WriteResponse; update: WriteResponse; delete: WriteResponse; create: WriteResponse }[];
 
