@@ -9,3 +9,9 @@ export * from './error';
 
 // types
 export * from './type';
+
+// classes
+export * from './CompositeAggScroller';
+export * from './EsClient';
+export * from './EsRepository';
+export * from './Scroller';
