@@ -15,6 +15,7 @@ import { DocumentMetadata } from './type/DocumentMetadata';
 import { Entity, getEntityIdProps, getRoutingIdProp } from '@diff./repository';
 import { EsHostOptions } from './config';
 import { PeriodType } from '@diff./period-type';
+import { TransportRequestOptions } from '@elastic/elasticsearch/lib/Transport';
 
 export abstract class EsRepository {
   public readonly client: EsClient;
@@ -357,7 +358,7 @@ export abstract class EsRepository {
     return JSON.parse(str);
   }
 
-  protected async bulk(args: RequestParams.Bulk): Promise<BulkResult> {
+  public async bulk(args: RequestParams.Bulk, options: TransportRequestOptions = {}): Promise<BulkResult> {
     const res = await this.client.bulk(args);
     const items = res.body.items as { index: WriteResponse; update: WriteResponse; delete: WriteResponse; create: WriteResponse }[];
 
@@ -371,7 +372,9 @@ export abstract class EsRepository {
       if (info.result) {
         succeed++;
       } else if (info.error) {
-        errors.push(`${info.error.type} - ${info.error.reason}`);
+        if (!options.ignore || !options.ignore.includes(info.status)) {
+          errors.push(`${info.error.type} - ${info.error.reason}`);
+        }
       }
     }
 
